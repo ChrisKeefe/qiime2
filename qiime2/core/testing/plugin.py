@@ -400,6 +400,7 @@ dummy_plugin.visualizers.register_function(
     inputs={},
     parameters={
         'name': Str,
+        # TODO: add ' % Range(0, None)' to next line. Fix errors generated
         'age': Int
     },
     name='Parameters only viz',
