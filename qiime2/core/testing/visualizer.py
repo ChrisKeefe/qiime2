@@ -100,3 +100,18 @@ _css = """
     border-bottom: 1px solid #ddd;
 }
 """
+
+
+def decorated_visualizer(output_dir: str, ints: collections.Counter):
+    df = pd.DataFrame(ints.most_common(), columns=["Integer", "Frequency"])
+
+    with open(os.path.join(output_dir, 'index.html'), 'w') as fh:
+        fh.write('<html><body>\n')
+        fh.write('<h3>Most common integers:</h3>\n')
+        fh.write(df.to_html(index=False))
+        fh.write('</body></html>')
+
+    with open(os.path.join(output_dir, 'index.tsv'), 'w') as fh:
+        fh.write(df.to_csv(sep='\t', index=False))
+
+    raise NotImplementedError

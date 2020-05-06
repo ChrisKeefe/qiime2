@@ -114,3 +114,7 @@ def failing_pipeline(ctx, int_sequence, break_from='arity'):
         ctx.get_action('dummy_plugin', 'not%a$method')
     else:
         raise ValueError('this never works')
+
+
+def decorated_pipeline():
+    raise NotImplementedError

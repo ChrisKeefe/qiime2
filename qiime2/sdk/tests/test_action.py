@@ -23,7 +23,6 @@ from qiime2.core.testing.visualizer import most_common_viz
 from qiime2 import Metadata
 from qiime2.metadata.tests.test_io import get_data_path
 
-
 # NOTE: This test suite exists for tests not easily split into
 # test_method, test_visualizer, test_pipeline
 # TestBadInputs tests type mismatches between Action signatures and passed args
@@ -182,3 +181,78 @@ class TestDeprecation(unittest.TestCase):
 
     def test_docstring(self):
         self.assertIn('Method is deprecated', self.method.__call__.__doc__)
+
+
+class TestDecoratedActions(TestPluginBase):
+
+    # TODO: Cut?
+    def make_provenance_capture(self):
+        # importing visualizations is not supported, but we do that here to
+        # simplify testing machinery
+        return archive.ImportProvenanceCapture()
+
+    def setUp(self):
+        self.plugin = get_dummy_plugin()
+        self.method = self.plugin.methods['decorated_method']
+        # visualizer = self.plugin.visualizers['decorated_visualizer']
+        # pipeline = self.plugin.pipelines['decorated_pipeline']
+
+        # TODO: Cut?
+        # create a temporary data_dir for sample Visualizations
+        self.test_dir = tempfile.TemporaryDirectory(prefix='qiime2-test-temp-')
+        self.data_dir = os.path.join(self.test_dir.name, 'viz-output')
+        os.mkdir(self.data_dir)
+        most_common_viz(self.data_dir, collections.Counter(range(42)))
+
+    def tearDown(self):
+        self.test_dir.cleanup()
+
+    def test_decorated_method_passed_positional_args(self):
+        result, = self.method("Someone's Name", 999)
+        self.assertEqual(result.view(dict), {"Someone's Name": '999'})
+
+    def test_decorated_method_passed_keyword_args(self):
+        result, = self.method(age=999, name="Someone's Name")
+        self.assertEqual(result.view(dict), {"Someone's Name": '999'})
+
+    def test_decorated_method_passed_defaults(self):
+        result, = self.method(name="Someone's Name")
+        self.assertEqual(result.view(dict), {"Someone's Name": '999'})
+
+#     def test_decorated_visualizer(self):
+#         visualizer = self.plugin.methods['decorated_visualizer']
+# 
+#         # tests args passed positionally
+#         with self.assertRaisesRegex(
+#                 TypeError, 'Visualizations may not be used as inputs.'):
+#             visualizer(ints1, ints2)
+# 
+#         # tests args passed as kwargs
+#         with self.assertRaisesRegex(
+#                 TypeError, 'Visualizations may not be used as inputs.'):
+#             visualizer(some_ints = ints1, default_available_ints = ints2)
+# 
+#         # tests args provided by defaults
+#         with self.assertRaisesRegex(
+#                 TypeError, 'Visualizations may not be used as inputs.'):
+#             visualizer(some_ints = ints1)
+# 
+# 
+#     def test_decorated_pipeline(self):
+#         pipeline = self.plugin.methods['decorated_pipeline']
+# 
+#         # tests args passed positionally
+#         with self.assertRaisesRegex(
+#                 TypeError, 'Visualizations may not be used as inputs.'):
+#             pipeline(ints1, ints2)
+# 
+#         # tests args passed as kwargs
+#         with self.assertRaisesRegex(
+#                 TypeError, 'Visualizations may not be used as inputs.'):
+#             pipeline(some_ints = ints1, default_available_ints = ints2)
+# 
+#         # tests args provided by defaults
+#         with self.assertRaisesRegex(
+#                 TypeError, 'Visualizations may not be used as inputs.'):
+#             pipeline(some_ints = ints1)
+# 

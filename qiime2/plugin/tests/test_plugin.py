@@ -95,6 +95,7 @@ class TestPlugin(unittest.TestCase):
                           'predicates_preserved_method',
                           'deprecated_method',
                           'unioned_primitives',
+                          'decorated_method'
                           })
         for action in actions.values():
             self.assertIsInstance(action, qiime2.sdk.Action)
@@ -126,6 +127,7 @@ class TestPlugin(unittest.TestCase):
                           'predicates_preserved_method',
                           'deprecated_method',
                           'unioned_primitives',
+                          'decorated_method'
                           })
         for method in methods.values():
             self.assertIsInstance(method, qiime2.sdk.Method)
