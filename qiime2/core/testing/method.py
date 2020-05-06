@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 import qiime2
-from functools import wraps
+from .util import _noop_decorator, _noop_decorator2
 
 
 # Artifacts and parameters.
@@ -130,19 +130,6 @@ def variadic_input_method(ints: list, int_set: int, nums: int,
         results += opt_nums
 
     return results
-
-
-def _noop_decorator(some_function):
-    def decorated(*args, **kwargs):
-        return decorated(*args, **kwargs)
-
-
-def _noop_decorator2(some_function):
-    @wraps(some_function)
-    def wrapper(*args, **kwargs):
-        return some_function(*args, **kwargs)
-    return wrapper
-
 
 # TODO: Get this to work with _noop_decorator
 @_noop_decorator2

@@ -22,6 +22,7 @@ from qiime2.core.testing.type import IntSequence1, IntSequence2, SingleInt
 from qiime2.core.testing.visualizer import most_common_viz
 from qiime2 import Metadata
 from qiime2.metadata.tests.test_io import get_data_path
+from qiime2.core.testing.util import ArchiveTestingMixin
 
 # NOTE: This test suite exists for tests not easily split into
 # test_method, test_visualizer, test_pipeline
@@ -183,7 +184,8 @@ class TestDeprecation(unittest.TestCase):
         self.assertIn('Method is deprecated', self.method.__call__.__doc__)
 
 
-class TestDecoratedActions(TestPluginBase):
+# TODO: remove ArchiveTestingMixin inheritance if these tests get separated
+class TestDecoratedActions(TestPluginBase, ArchiveTestingMixin):
 
     # TODO: Cut?
     def make_provenance_capture(self):
@@ -194,7 +196,6 @@ class TestDecoratedActions(TestPluginBase):
     def setUp(self):
         self.plugin = get_dummy_plugin()
         self.method = self.plugin.methods['decorated_method']
-        # visualizer = self.plugin.visualizers['decorated_visualizer']
         # pipeline = self.plugin.pipelines['decorated_pipeline']
 
         # TODO: Cut?
@@ -202,7 +203,7 @@ class TestDecoratedActions(TestPluginBase):
         self.test_dir = tempfile.TemporaryDirectory(prefix='qiime2-test-temp-')
         self.data_dir = os.path.join(self.test_dir.name, 'viz-output')
         os.mkdir(self.data_dir)
-        most_common_viz(self.data_dir, collections.Counter(range(42)))
+        # TODO: remove test_dir if these tests get separated
 
     def tearDown(self):
         self.test_dir.cleanup()
@@ -219,40 +220,22 @@ class TestDecoratedActions(TestPluginBase):
         result, = self.method(name="Someone's Name")
         self.assertEqual(result.view(dict), {"Someone's Name": '999'})
 
-#     def test_decorated_visualizer(self):
-#         visualizer = self.plugin.methods['decorated_visualizer']
-# 
-#         # tests args passed positionally
-#         with self.assertRaisesRegex(
-#                 TypeError, 'Visualizations may not be used as inputs.'):
-#             visualizer(ints1, ints2)
-# 
-#         # tests args passed as kwargs
-#         with self.assertRaisesRegex(
-#                 TypeError, 'Visualizations may not be used as inputs.'):
-#             visualizer(some_ints = ints1, default_available_ints = ints2)
-# 
-#         # tests args provided by defaults
-#         with self.assertRaisesRegex(
-#                 TypeError, 'Visualizations may not be used as inputs.'):
-#             visualizer(some_ints = ints1)
-# 
-# 
-#     def test_decorated_pipeline(self):
-#         pipeline = self.plugin.methods['decorated_pipeline']
-# 
-#         # tests args passed positionally
-#         with self.assertRaisesRegex(
-#                 TypeError, 'Visualizations may not be used as inputs.'):
-#             pipeline(ints1, ints2)
-# 
-#         # tests args passed as kwargs
-#         with self.assertRaisesRegex(
-#                 TypeError, 'Visualizations may not be used as inputs.'):
-#             pipeline(some_ints = ints1, default_available_ints = ints2)
-# 
-#         # tests args provided by defaults
-#         with self.assertRaisesRegex(
-#                 TypeError, 'Visualizations may not be used as inputs.'):
-#             pipeline(some_ints = ints1)
-# 
+    def test_decorated_visualizer_passed_defaults(self):
+        decorated_visualizer = self.plugin.visualizers['decorated_visualizer']
+        result, = decorated_visualizer()
+        filepath = os.path.join(self.test_dir.name, 'visualization.qzv')
+        result.save(filepath)
+
+        root_dir = str(result.uuid)
+        expected = {
+            'VERSION',
+            'checksums.md5',
+            'metadata.yaml',
+            'data/index.html',
+            'provenance/metadata.yaml',
+            'provenance/VERSION',
+            'provenance/citations.bib',
+            'provenance/action/action.yaml'
+        }
+
+        self.assertArchiveMembers(filepath, root_dir, expected)

@@ -9,6 +9,7 @@
 import os
 import os.path
 import zipfile
+from functools import wraps
 
 import qiime2.sdk
 
@@ -114,3 +115,15 @@ class ReallyEqualMixin:
         self.assertFalse(b == a)
         self.assertTrue(a != b)
         self.assertTrue(b != a)
+
+
+def _noop_decorator(some_function):
+    def decorated(*args, **kwargs):
+        return decorated(*args, **kwargs)
+
+
+def _noop_decorator2(some_function):
+    @wraps(some_function)
+    def wrapper(*args, **kwargs):
+        return some_function(*args, **kwargs)
+    return wrapper

@@ -148,6 +148,9 @@ class PipelineSignature:
         annotated_outputs = collections.OrderedDict()
         signature_order = collections.OrderedDict()
 
+# TODO: remove
+        print("************", inspect.signature(callable))
+
         for name, parameter in inspect.signature(callable).parameters.items():
             if (parameter.kind == parameter.VAR_POSITIONAL or
                     parameter.kind == parameter.VAR_KEYWORD):

@@ -42,8 +42,7 @@ from .method import (concatenate_ints, split_ints, merge_mappings,
                      docstring_order_method, variadic_input_method,
                      unioned_primitives, decorated_method)
 from .visualizer import (most_common_viz, mapping_viz, params_only_viz,
-                         no_input_viz)
-#  no_input_viz, decorated_visualizer)
+                         no_input_viz, decorated_visualizer)
 from .pipeline import (parameter_only_pipeline, typical_pipeline,
                        optional_artifact_pipeline, visualizer_only_pipeline,
                        pipelines_in_pipeline, pointless_pipeline,
@@ -530,14 +529,17 @@ dummy_plugin.visualizers.register_function(
                 'key-value mappings, each sorted in alphabetical order by key.'
 )
 
-# dummy_plugin.visualizers.register_function(
-#     function=decorated_visualizer,
-#     inputs={'ints': IntSequence1 | IntSequence2},
-#     parameters={},
-#     name='Decorated visualizer',
-#     description='A decorated most_common_viz with one or more default args, '
-#                 'used for testing for dropped defaults'
-# )
+dummy_plugin.visualizers.register_function(
+    function=decorated_visualizer,
+    inputs={},
+    parameters={
+        'name': Str,
+        'age': Int % Range(0, None)
+    },
+    name='Decorated visualizer',
+    description='A decorated params_only viz with one or more default args, '
+                'used for testing for dropped defaults'
+)
 
 dummy_plugin.pipelines.register_function(
     function=parameter_only_pipeline,

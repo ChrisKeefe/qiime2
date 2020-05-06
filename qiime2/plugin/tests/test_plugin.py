@@ -95,7 +95,8 @@ class TestPlugin(unittest.TestCase):
                           'predicates_preserved_method',
                           'deprecated_method',
                           'unioned_primitives',
-                          'decorated_method'
+                          'decorated_method',
+                          'decorated_visualizer'
                           })
         for action in actions.values():
             self.assertIsInstance(action, qiime2.sdk.Action)
@@ -137,7 +138,9 @@ class TestPlugin(unittest.TestCase):
 
         self.assertEqual(visualizers.keys(),
                          {'most_common_viz', 'mapping_viz', 'params_only_viz',
-                          'no_input_viz', 'constrained_input_visualization'})
+                          'no_input_viz', 'constrained_input_visualization',
+                          'decorated_visualizer'
+                          })
         for viz in visualizers.values():
             self.assertIsInstance(viz, qiime2.sdk.Visualizer)
 

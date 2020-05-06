@@ -12,6 +12,8 @@ import os.path
 
 import pandas as pd
 
+from .util import _noop_decorator, _noop_decorator2
+
 
 # Multiple types of visualizations (index.html, index.tsv).
 def most_common_viz(output_dir: str, ints: collections.Counter) -> None:
@@ -102,16 +104,11 @@ _css = """
 """
 
 
-def decorated_visualizer(output_dir: str, ints: collections.Counter):
-    df = pd.DataFrame(ints.most_common(), columns=["Integer", "Frequency"])
-
+@_noop_decorator2
+def decorated_visualizer(output_dir: str, name: str = 'Foo Bar',
+                         age: int = 42):
     with open(os.path.join(output_dir, 'index.html'), 'w') as fh:
         fh.write('<html><body>\n')
-        fh.write('<h3>Most common integers:</h3>\n')
-        fh.write(df.to_html(index=False))
+        fh.write('Name: %s\n' % name)
+        fh.write('Age: %s\n' % age)
         fh.write('</body></html>')
-
-    with open(os.path.join(output_dir, 'index.tsv'), 'w') as fh:
-        fh.write(df.to_csv(sep='\t', index=False))
-
-    raise NotImplementedError
